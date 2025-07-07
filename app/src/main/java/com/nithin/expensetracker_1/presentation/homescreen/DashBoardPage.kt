@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import com.nithin.expensetracker_1.data.TransactionDetails
 import com.nithin.expensetracker_1.data.TransactionType
 import com.nithin.expensetracker_1.domain.toDisplayValue
+import com.nithin.expensetracker_1.presentation.dashboardviewmodel.DashBoardViewModel
 import com.nithin.expensetracker_1.presentation.theme.cardPurple
 import com.nithin.expensetracker_1.presentation.theme.detailsPurple
 import com.nithin.expensetracker_1.presentation.theme.lightGray
@@ -99,6 +100,10 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
 ) {
     
+    LaunchedEffect(Unit) {
+        val dashBoardViewModel = DashBoardViewModel()
+        dashBoardViewModel.getUIData()
+    }
 
     Column(
         modifier = modifier
