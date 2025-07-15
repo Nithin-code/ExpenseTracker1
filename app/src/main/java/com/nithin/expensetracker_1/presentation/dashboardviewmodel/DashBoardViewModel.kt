@@ -12,7 +12,7 @@ class DashBoardViewModel : ViewModel() {
     val map : MutableMap<String, MutableList<TransactionDetails>> = mutableStateMapOf()
 
 
-    val items = listOf(
+    private val items = listOf(
         TransactionDetails(
             icon = Icons.Default.ShoppingCart,
             transactionMadeAt = "Nike Store",

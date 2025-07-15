@@ -121,65 +121,67 @@ fun DashBoardComponent(
                 fontSize = 24.sp
             )
 
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-
-                    items.forEachIndexed{ index, dashBoardCardDetails ->
-
-                        Text(
-                            text = dashBoardCardDetails.title,
-                            modifier = Modifier
-                                .clickable {
-                                    selectedItemIndex = index
-                                }
-                                .onGloballyPositioned {
-                                    val pos = it.positionInParent()
-                                    items[index] = items[index].copy(
-                                        offset = pos,
-                                        size = it.size
-                                    )
-                                }
-                                .weight((1f / items.count()).toFloat()),
-                            textAlign = TextAlign.Center
-                        )
+            SliderRow()
 
 
-                    }
-
-                }
-
-                Canvas(
-                    modifier = Modifier
-                ) {
-
-                    drawRoundRect(
-                        color = Color.White,
-                        topLeft = animateOffSetPosition.value,
-                        size = items[selectedItemIndex].size.toFloatSize(),
-                        cornerRadius = CornerRadius(x = 20f, y = 20f),
-                        style = Stroke(
-                            width = 2f
-                        )
-                    )
-
-//                    drawLine(
-//                        color = cardBackground.copy(alpha = 0.25f),
-//                        start = items[selectedItemIndex].offset,
-//                        end = items[selectedItemIndex+1].offset,
-//                        strokeWidth = 2f
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//            ) {
+//
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                ) {
+//
+//                    items.forEachIndexed{ index, dashBoardCardDetails ->
+//
+//                        Text(
+//                            text = dashBoardCardDetails.title,
+//                            modifier = Modifier
+//                                .clickable {
+//                                    selectedItemIndex = index
+//                                }
+//                                .onGloballyPositioned {
+//                                    val pos = it.positionInParent()
+//                                    items[index] = items[index].copy(
+//                                        offset = pos,
+//                                        size = it.size
+//                                    )
+//                                }
+//                                .weight((1f / items.count()).toFloat()),
+//                            textAlign = TextAlign.Center
+//                        )
+//
+//
+//                    }
+//
+//                }
+//
+//                Canvas(
+//                    modifier = Modifier
+//                ) {
+//
+//                    drawRoundRect(
+//                        color = Color.White,
+//                        topLeft = animateOffSetPosition.value,
+//                        size = items[selectedItemIndex].size.toFloatSize(),
+//                        cornerRadius = CornerRadius(x = 20f, y = 20f),
+//                        style = Stroke(
+//                            width = 2f
+//                        )
 //                    )
-
-                }
-
-            }
+//
+////                    drawLine(
+////                        color = cardBackground.copy(alpha = 0.25f),
+////                        start = items[selectedItemIndex].offset,
+////                        end = items[selectedItemIndex+1].offset,
+////                        strokeWidth = 2f
+////                    )
+//
+//                }
+//
+//            }
 
         }
 

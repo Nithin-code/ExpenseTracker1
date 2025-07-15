@@ -16,7 +16,7 @@ import com.nithin.expensetracker_1.presentation.components.PiChatCard
 import com.nithin.expensetracker_1.presentation.components.TransactionDetailsListCard
 import com.nithin.expensetracker_1.presentation.dashboardviewmodel.DashBoardViewModel
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun DashBoardScreenRevamped(
     modifier: Modifier = Modifier,

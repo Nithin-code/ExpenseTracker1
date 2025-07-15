@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.nithin.expensetracker_1.presentation.add_expense.AddExpenseScreen
+import com.nithin.expensetracker_1.presentation.add_expense.viewModel.AddExpenseScreenViewModel
 import com.nithin.expensetracker_1.presentation.components.DashBoardComponent
 import com.nithin.expensetracker_1.presentation.dashboardviewmodel.DashBoardViewModel
 import com.nithin.expensetracker_1.presentation.homescreen.DashBoardScreenRevamped
@@ -21,23 +24,21 @@ import com.nithin.expensetracker_1.presentation.homescreen.HomeScreen
 import com.nithin.expensetracker_1.presentation.theme.ExpenseTracker1Theme
 
 class MainActivity : ComponentActivity() {
+
+    private val viewModel by viewModels<AddExpenseScreenViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             ExpenseTracker1Theme {
-                Scaffold {padd->
-                    val dashBoardViewModel = DashBoardViewModel()
-                    LaunchedEffect(Unit) {
-                        dashBoardViewModel.prepareUIData()
-                    }
-                    DashBoardScreenRevamped(
+                Scaffold { padd->
+                    AddExpenseScreen(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(padd),
-                        dashBoardViewModel = dashBoardViewModel
+                            .padding(),
+                        viewModel = viewModel
                     )
-
                 }
             }
         }
