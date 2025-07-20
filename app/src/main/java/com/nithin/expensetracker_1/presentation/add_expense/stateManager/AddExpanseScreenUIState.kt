@@ -18,7 +18,8 @@ data class ScreenState(
     val selectedCategory: ExpanseTypeData,
     val selectedDate : String,
     val transactionTypeHeaderData : TransactionTypeHeaderData,
-    val showDatePicker : Boolean = false
+    val showDatePicker : Boolean = false,
+    val showCategoryPicker : Boolean = false
 )
 
 

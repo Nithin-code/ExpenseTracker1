@@ -1,8 +1,13 @@
 package com.nithin.expensetracker_1.presentation.add_expense
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,14 +29,19 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -58,20 +68,24 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.NavHostController
 import com.nithin.expensetracker_1.data.ExpanseTypeData
 import com.nithin.expensetracker_1.domain.ExpensesTypeList
 import com.nithin.expensetracker_1.presentation.add_expense.stateManager.ScreenState
 import com.nithin.expensetracker_1.presentation.add_expense.viewModel.AddExpenseScreenViewModel
+import com.nithin.expensetracker_1.presentation.components.WheelCategoryPicker
 import com.nithin.expensetracker_1.presentation.components.convertPxToDp
 import com.nithin.expensetracker_1.presentation.theme.cardBackground
 import com.nithin.expensetracker_1.presentation.theme.textLightColor
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 @Composable
 fun AddExpenseScreen(
     modifier: Modifier = Modifier,
-    viewModel: AddExpenseScreenViewModel
+    viewModel: AddExpenseScreenViewModel,
+    navHostController: NavHostController
 ) {
 
 
@@ -85,6 +99,33 @@ fun AddExpenseScreen(
         modifier = modifier
             .background(color = viewModel.screenState.value.bgColor.value)
     ){
+
+        WheelCategoryPicker(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .fillMaxWidth()
+                .height(200.dp),
+            shouldShow = viewModel.screenState.value.showCategoryPicker,
+            onItemClicked = { expanseData ->
+                viewModel.updateExpanseCard(expanseData)
+            },
+            onDoneButtonClicked = {
+                viewModel.onDoneButtonClicked()
+            }
+        )
+
+        DatePickerModel(
+            modifier = Modifier
+                .fillMaxSize()
+                .align(Alignment.TopCenter),
+            onDismissClicked = {
+                viewModel.onDoneButtonClicked()
+            },
+            onDateSelected = {
+                viewModel.onDateClicked(it)
+            },
+            shouldShow = viewModel.screenState.value.showDatePicker
+        )
 
         Surface(
             modifier = Modifier
@@ -119,9 +160,11 @@ fun AddExpenseScreen(
                     }
                 )
 
-                CategoryType()
+                CategoryType(
+                    viewModel = viewModel
+                )
 
-                DateInfo()
+                DateInfo(viewModel = viewModel)
 
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -143,9 +186,58 @@ fun AddExpenseScreen(
 
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerModel(
+    modifier: Modifier,
+    shouldShow : Boolean = false,
+    onDismissClicked : () -> Unit,
+    onDateSelected : (Long) -> Unit
+){
+    val datePickerState = rememberDatePickerState()
+
+    AnimatedVisibility(
+        visible = shouldShow,
+        enter = slideInVertically(animationSpec = tween(durationMillis = 800)) + fadeIn(),
+        exit = slideOutVertically(animationSpec = tween(durationMillis = 800)) + fadeOut(),
+    ) {
+        DatePickerDialog(
+            onDismissRequest = {
+                onDismissClicked.invoke()
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let {
+                        onDateSelected(it)
+                    }
+                }) {
+                    Text(text = "Ok")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    onDismissClicked.invoke()
+                }) {
+                    Text(text = "Cancel")
+                }
+            },
+        ) {
+
+            DatePicker(
+                state = datePickerState,
+            )
+
+        }
+
+    }
+
+}
+
 @Composable
 fun CategoryType(
     modifier: Modifier = Modifier,
+    viewModel: AddExpenseScreenViewModel,
     items : List<ExpanseTypeData> = ExpensesTypeList.getItems
 ) {
 
@@ -170,7 +262,10 @@ fun CategoryType(
         Surface(
             color = Color.LightGray
                 .copy(alpha = 0.25f),
-            shape = RoundedCornerShape(15.dp)
+            shape = RoundedCornerShape(15.dp),
+            onClick = {
+                viewModel.showCategoryPicker()
+            }
         ) {
             Row(
                 modifier = Modifier
@@ -181,8 +276,7 @@ fun CategoryType(
 
                 Icon(
                     painter = painterResource(
-                        id = items[0].iconId,
-
+                        id = viewModel.screenState.value.selectedCategory.iconId,
                     ),
                     tint = Color.Unspecified,
                     contentDescription = "shopping_icon",
@@ -192,7 +286,7 @@ fun CategoryType(
                 Spacer(modifier = Modifier.width(10.dp))
 
                 Text(
-                    text = items[0].text,
+                    text = viewModel.screenState.value.selectedCategory.text,
                     modifier = Modifier.weight(1f),
                     fontSize = 16.sp
                 )
@@ -213,6 +307,7 @@ fun CategoryType(
 @Composable
 fun DateInfo(
     modifier: Modifier = Modifier,
+    viewModel: AddExpenseScreenViewModel,
     currentDate : Date = Date(System.currentTimeMillis())
 ) {
 
@@ -241,7 +336,10 @@ fun DateInfo(
         Surface(
             color = Color.LightGray
                 .copy(alpha = 0.25f),
-            shape = RoundedCornerShape(15.dp)
+            shape = RoundedCornerShape(15.dp),
+            onClick = {
+                viewModel.showDatePicker()
+            }
         ) {
             Row(
                 modifier = Modifier
@@ -265,7 +363,7 @@ fun DateInfo(
                 Spacer(modifier = Modifier.width(10.dp))
 
                 Text(
-                    text = selectedDate,
+                    text = viewModel.screenState.value.selectedDate,
                     fontSize = 16.sp,
                     modifier = Modifier
                         .weight(1f)
@@ -463,15 +561,15 @@ private fun TransactionTypeHeader(
 @Preview(showBackground = true)
 @Composable
 private fun Prec() {
-    val viewModel = AddExpenseScreenViewModel()
-    Scaffold { padd->
-        AddExpenseScreen(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padd),
-            viewModel
-        )
-    }
+//    val viewModel = AddExpenseScreenViewModel()
+//    Scaffold { padd->
+//        AddExpenseScreen(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(padd),
+//            viewModel
+//        )
+//    }
 }
 
 
@@ -482,7 +580,6 @@ data class TransactionTypeHeaderData(
 )
 
 fun Date.toReadableString() : String {
-    val simpleDateConverter = SimpleDateFormat("dd MMM, YYYY")
+    val simpleDateConverter = SimpleDateFormat("dd MMM, yyyy", Locale.US)
     return simpleDateConverter.format(this)
-
 }

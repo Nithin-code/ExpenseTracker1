@@ -63,7 +63,7 @@ fun SliderRow() {
     }
 
     var animateOffSet = animateOffsetAsState(
-        targetValue = items[selectedItem.value].offset,
+        targetValue = items[selectedItem.intValue].offset,
         animationSpec = tween(600)
     )
 
@@ -121,8 +121,8 @@ fun SliderRow() {
                             y = animateOffSet.value.y.toInt()
                         )
                     }.width(
-                        width = items[selectedItem.value].size.width.convertPxToDp(context).dp,
-                    ).height((items[selectedItem.value].size.height).convertPxToDp(context).dp),
+                        width = items[selectedItem.intValue].size.width.convertPxToDp(context).dp,
+                    ).height((items[selectedItem.intValue].size.height).convertPxToDp(context).dp),
                 color = Color.Transparent.copy(
                     alpha = 0.05f
                 ),

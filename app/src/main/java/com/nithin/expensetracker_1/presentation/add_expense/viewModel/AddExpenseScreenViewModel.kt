@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.AnimationVector4D
 import androidx.compose.animation.core.tween
+import androidx.compose.material3.DatePicker
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Offset
@@ -17,10 +18,12 @@ import com.nithin.expensetracker_1.domain.ExpensesTypeList
 import com.nithin.expensetracker_1.presentation.add_expense.TransactionTypeHeaderData
 import com.nithin.expensetracker_1.presentation.add_expense.stateManager.ScreenEvent
 import com.nithin.expensetracker_1.presentation.add_expense.stateManager.ScreenState
+import com.nithin.expensetracker_1.presentation.add_expense.toReadableString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import java.util.Date
 
 class AddExpenseScreenViewModel : ViewModel() {
 
@@ -47,13 +50,36 @@ class AddExpenseScreenViewModel : ViewModel() {
                 title = "Expense",
                 offSet = Offset.Zero,
                 size = IntSize.Zero
-            )
+            ),
+            showDatePicker = false
         )
     )
 
     fun updateSizeAndOffSet(size: IntSize,offset: Offset){
+        screenState.value = screenState.value.copy()
+    }
+
+
+    fun updateExpanseCard(expanseTypeData: ExpanseTypeData){
         screenState.value = screenState.value.copy(
+            selectedCategory = expanseTypeData
         )
+    }
+
+    fun onDoneButtonClicked(){
+        screenState.value = screenState.value.copy(
+            showDatePicker = false,
+            showCategoryPicker = false
+        )
+    }
+
+    fun onDateClicked(date : Long){
+        val dateStr = Date(date).toReadableString()
+        screenState.value = screenState.value.copy(
+            selectedDate = dateStr,
+            showDatePicker = false
+        )
+        println("selected date: $dateStr")
     }
 
     fun onExpanseHeaderClicked(transactionTypeHeaderData: TransactionTypeHeaderData,scope: CoroutineScope){
@@ -72,12 +98,22 @@ class AddExpenseScreenViewModel : ViewModel() {
 
     }
 
-    fun showDatePicker(){
+    fun showCategoryPicker() {
+
+        val shouldShow = screenState.value.showCategoryPicker
+
         screenState.value = screenState.value.copy(
-            showDatePicker = true
+            showCategoryPicker = !shouldShow
         )
 
+    }
 
+    fun showDatePicker() {
+
+
+        screenState.value = screenState.value.copy(
+            showDatePicker = !screenState.value.showDatePicker
+        )
 
     }
 

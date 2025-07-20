@@ -15,6 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.nithin.expensetracker_1.navigation.NavigationHost
+import com.nithin.expensetracker_1.navigation.Screens
 import com.nithin.expensetracker_1.presentation.add_expense.AddExpenseScreen
 import com.nithin.expensetracker_1.presentation.add_expense.viewModel.AddExpenseScreenViewModel
 import com.nithin.expensetracker_1.presentation.components.DashBoardComponent
@@ -33,12 +36,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             ExpenseTracker1Theme {
                 Scaffold { padd->
-                    AddExpenseScreen(
+
+                    val navHostController = rememberNavController()
+
+                    NavigationHost(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(),
-                        viewModel = viewModel
+                            .padding(padd),
+                        navHostController = navHostController,
+                        startDestination = Screens.HomeScreen.route
                     )
+
                 }
             }
         }
